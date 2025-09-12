@@ -12,6 +12,9 @@ OpenCNC is designed as a **microservice-based system**. Each microservice is imp
 - [Main Service](https://github.com/TSNTools/OpenCNC_main-service): control the configuration processes and manages the information exchange with other network entities.
 - [TSN Service](https://github.com/TSNTools/OpenCNC_tsn-service): is responsible for engineering the forwarding plane and managing the networking resources through establishing the network configuration.
 - [Config Service](https://github.com/TSNTools/OpenCNC_config-service): configuration manager. 
+- [TSN Service](https://github.com/TSNTools/Opencnc_tsn-service): is responsible for engineering the forwarding plane and managing the networking resources through establishing the network configuration.
+- [Config Service](https://github.com/TSNTools/Opencnc_config-service): configuration manager. 
+>>>>>>> db5369b (Update README.md)
 
 ---
 
