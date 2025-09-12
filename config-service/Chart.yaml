@@ -1,0 +1,8 @@
+apiVersion: v2
+name: config-service
+kubeVersion: ">=1.17.0"
+type: application
+version: 0.0.1
+appVersion: v0.0.1
+description: Microservice for applying configuration via gRPC.
+

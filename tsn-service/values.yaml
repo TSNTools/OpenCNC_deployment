@@ -1,0 +1,43 @@
+nameOverride: "tsn-service"
+fullnameOverride: "tsn-service"
+
+replicaCount: 1
+annotations: {}
+
+image:
+  repository: tsn-service
+  tag: v0.0.9
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+resources:
+  requests:
+    cpu: 0.5
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+ports:
+  grpc:
+    main: 5150
+    monitor: 5151
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+etcd:
+  username: root
+  secretName: etcd
+  endpoints:
+    - "http://etcd.opencnc.svc.cluster.local:2379"
+    
+tls:
+  enabled: true
+  secretName: opencnc-shared-cert
+  mountPath: /certs
+
+

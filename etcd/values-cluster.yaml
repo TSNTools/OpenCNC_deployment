@@ -1,0 +1,23 @@
+replicaCount: 3
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "standard"
+
+auth:
+  rbac:
+    create: true
+  client:
+    enabled: false
+  peer:
+    enabled: false
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+

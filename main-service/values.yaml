@@ -1,0 +1,40 @@
+nameOverride: "main-service"
+fullnameOverride: "main-service"
+
+replicaCount: 1
+annotations: {}
+
+image:
+  repository: main-service
+  tag: v0.0.9
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: "0.5"
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+ports:
+    http: 8080
+    nni: 8000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+etcd:
+  username: root
+  secretName: etcd
+  endpoints:
+    - "http://etcd.opencnc.svc.cluster.local:2379"
+    
+tls:
+  enabled: true
+  secretName: opencnc-shared-cert
+  mountPath: /certs
+
