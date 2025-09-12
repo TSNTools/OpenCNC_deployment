@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "main-service.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "main-service.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "main-service.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "main-service.name" . }}
+    spec:
+      serviceAccountName: {{ template "main-service.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "main-service.imagename" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # === ETCD auth env vars ===
+            - name: ETCD_USERNAME
+              value: {{ .Values.etcd.username | quote }}
+            - name: ETCD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.etcd.secretName | quote }}
+                  key: etcd-root-password
+            - name: ETCD_ENDPOINTS
+              value: {{ join "," .Values.etcd.endpoints | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ports.http }}
+            - name: nni
+              containerPort: {{ .Values.ports.nni }}
+          volumeMounts:
+            - name: certs
+              mountPath: {{ .Values.tls.mountPath }}
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      volumes:
+        - name: certs
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

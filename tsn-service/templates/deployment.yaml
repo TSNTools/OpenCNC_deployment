@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "tsn-service.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: {{ template "tsn-service.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ template "tsn-service.fullname" . }}
+      app: {{ template "tsn-service.name" . }}
+      type: tsn
+      resource: {{ template "tsn-service.fullname" . }}
+      {{- include "tsn-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "tsn-service.fullname" . }}
+        app: {{ template "tsn-service.name" . }}
+        type: tsn
+        resource: {{ template "tsn-service.fullname" . }}
+        {{- include "tsn-service.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ template "tsn-service.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "tsn-service.imagename" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SERVICE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SERVICE_NAME
+              value: {{ template "tsn-service.fullname" . }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+            # === ETCD auth env vars ===
+            - name: ETCD_USERNAME
+              value: {{ .Values.etcd.username | quote }}
+            - name: ETCD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.etcd.secretName | quote }}
+                  key: etcd-root-password
+            - name: ETCD_ENDPOINTS
+              value: {{ join "," .Values.etcd.endpoints | quote }}
+
+          ports:
+            - name: grpc
+              containerPort: {{ .Values.ports.grpc.main }}
+            - name: grpc-monitor
+              containerPort: {{ .Values.ports.grpc.monitor }}
+
+          volumeMounts:
+            - name: certs
+              mountPath: {{ .Values.tls.mountPath }}
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      volumes:
+        - name: certs
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+            
+            
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
