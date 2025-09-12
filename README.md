@@ -37,3 +37,9 @@ The script will install missing dependencies and verify that Docker, Go, kubectl
 3. Run the deployment script `deploy_opencnc.sh` to automatically deploy all OpenCNC microservices.
 4. Refer to the microservices repositories for configuration and usage.
 
+## Possible issues
+If running the script on Linux, you need to make sure the installation file has execution permissions. You can do this with:
+chmod +x install_dependencies.sh
+
+Then run it with:
+./install_dependencies.sh
