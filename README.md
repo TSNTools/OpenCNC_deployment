@@ -9,9 +9,9 @@ This is the best starting point for using OpenCNC, providing links to its micros
 ## Introduction to OpenCNC (Open Centralized Network Configurator)
 
 OpenCNC is designed as a **microservice-based system**. Each microservice is implemented in a separate repository to allow easier use, extension, and maintenance of the tool. The main microservices are:
-- [Main Service](https://github.com/TSNTools/opencnc-main-service): control the configuration processes and manages the information exchange with other network entities.
-- [TSN Service](https://github.com/TSNTools/opencnc-tsn-service): is responsible for engineering the forwarding plane and managing the networking resources through establishing the network configuration.
-- [Config Service](https://github.com/TSNTools/opencnc-config-service): configuration manager. 
+- [Main Service](https://github.com/TSNTools/OpenCNC_main-service): control the configuration processes and manages the information exchange with other network entities.
+- [TSN Service](https://github.com/TSNTools/Opencnc_tsn-service): is responsible for engineering the forwarding plane and managing the networking resources through establishing the network configuration.
+- [Config Service](https://github.com/TSNTools/Opencnc_config-service): configuration manager. 
 
 ---
 
