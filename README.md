@@ -30,16 +30,60 @@ The script will install missing dependencies and verify that Docker, Go, kubectl
 
 ---
 
-## Getting Started
+## Deployment
 
-1. Clone this repository.
-2. Run `install_dependencies.sh` to install all required dependencies and check their availability.
-3. Run the deployment script `deploy_opencnc.sh` to automatically deploy all OpenCNC microservices.
-4. Refer to the microservices repositories for configuration and usage.
 
-## Possible issues
-If running the script on Linux, you need to make sure the installation file has execution permissions. You can do this with:
+### Step 1: Install Dependencies
+Run the installation script (Ubuntu/Linux):
+```bash
+./install_dependencies.sh
+```
+
+
+### Step 2: Build Docker Images
+Before deploying OpenCNC into Kubernetes, you need to **build the Docker images** for the three microservices. Run these commands from the root of the repository:
+
+
+```bash
+# Build Main Service image
+docker build -t opencnc-main:latest ./openc-main-service
+
+
+# Build TSN Service image
+docker build -t opencnc-tsn:latest ./openc-tsn-service
+
+
+# Build Config Service image
+docker build -t opencnc-config:latest ./openc-config-service
+```
+
+
+Verify images with:
+```bash
+docker images
+```
+
+
+### Step 3: Deploy OpenCNC
+Once the images are built, deploy using the provided script:
+```bash
+./deploy_opencnc.sh
+```
+
+
+---
+
+
+## Possible Issues
+
+
+If running the script on Linux, make sure the installation file has execution permissions:
+```bash
 chmod +x install_dependencies.sh
+```
+
 
 Then run it with:
+```bash
 ./install_dependencies.sh
+```
