@@ -29,13 +29,14 @@ kubectl create secret tls opencnc-shared-cert \
 
 # Load Docker images into kind
 echo "📦 Loading Docker images..."
-kind load docker-image main-service:v0.0.9
-kind load docker-image tsn-service:v0.0.9
+kind load docker-image main-service:latest
+kind load docker-image tsn-service:latest
+kind load docker-image config-service:latest
 
 # Install Helm charts
 echo "📥 Installing Helm charts..."
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install etcd bitnami/etcd --namespace opencnc
+#helm repo add bitnami https://charts.bitnami.com/bitnami
+#helm install etcd bitnami/etcd --namespace opencnc
 helm install main-service ./main-service/ --namespace opencnc
 helm install tsn-service ./tsn-service/ --namespace opencnc
 helm install config-service ./config-service/ --namespace opencnc
