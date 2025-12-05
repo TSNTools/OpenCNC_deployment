@@ -61,7 +61,8 @@ else
 kubectl create secret generic opencnc-shared-cert \
   --from-file=ca.crt="$CERT_DIR/ca.crt" \
   --from-file=tls.crt="$CERT_DIR/tls.crt" \
-  --from-file=tls.key="$CERT_DIR/tls.key"
+  --from-file=tls.key="$CERT_DIR/tls.key" \
+  -n "$NAMESPACE"
 
     echo "✅ Secret 'opencnc-shared-cert' created."
 fi
@@ -77,7 +78,7 @@ done
 # 6. Install only the etcd helm chart (into opencnc)
 # -----------------------------------------
 echo "📥 Installing etcd chart..."
-helm upgrade --install etcd "$SCRIPT_DIR/etcd-1" -n "$NAMESPACE"
+helm upgrade --install etcd "$SCRIPT_DIR/etcd-1" -n "$NAMESPACE" --wait
 
 # -----------------------------------------
 # 7. Wait until etcd pods are ready
@@ -90,12 +91,13 @@ echo "🎉 Deployment complete: etcd is ready!"
 ETCD_SECRET_NAME="etcd"
 ETCD_PASSWORD="myStrongPassword"   # Replace with your desired password
 
-if kubectl get secret "$ETCD_SECRET_NAME" &> /dev/null; then
+if kubectl get secret "$ETCD_SECRET_NAME" -n "$NAMESPACE" &> /dev/null; then
     echo "🔒 Secret '$ETCD_SECRET_NAME' already exists. Skipping creation."
 else
     kubectl create secret generic "$ETCD_SECRET_NAME" \
       --from-literal=username=root \
-      --from-literal=password="$ETCD_PASSWORD"
+      --from-literal=password="$ETCD_PASSWORD" \
+      -n "$NAMESPACE"
     echo "✅ Secret '$ETCD_SECRET_NAME' created."
 fi
 
@@ -103,7 +105,7 @@ fi
 # Install application charts
 for chart in main-service tsn-service config-service; do
   echo "📥 Installing $chart chart..."
-  helm upgrade --install "$chart" "$SCRIPT_DIR/$chart"
+  helm upgrade --install "$chart" "$SCRIPT_DIR/$chart" -n "$NAMESPACE"
 done
 
 echo "🎉 All services are ready."

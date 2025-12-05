@@ -1,0 +1,12 @@
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage=digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+
+[alt_names]
+DNS.1 = config-service          # short name
+DNS.2 = tsn-service             # another service if needed
+DNS.3 = *.default.svc
+DNS.4 = *.default.svc.cluster.local
+DNS.5 = localhost
