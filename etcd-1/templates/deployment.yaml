@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etcd
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: etcd
+  template:
+    metadata:
+      labels:
+        app: etcd
+    spec:
+      containers:
+        - name: etcd
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 2379
+            - containerPort: 2380
+          command:
+            - /usr/local/bin/etcd
+          args:
+            - --name=etcd-0
+            - --data-dir={{ .Values.persistence.mountPath }}
+            - --advertise-client-urls=http://0.0.0.0:2379
+            - --listen-client-urls=http://0.0.0.0:2379
+            - --listen-peer-urls=http://0.0.0.0:2380
+            - --initial-advertise-peer-urls=http://0.0.0.0:2380
+            - --initial-cluster=etcd-0=http://0.0.0.0:2380
+            - --initial-cluster-state=new
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: etcd
+

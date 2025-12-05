@@ -1,0 +1,15 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: etcd
+spec:
+  storageClassName: standard
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  hostPath:
+    path: {{ .Values.persistence.mountPath }}
+{{- end }}
+
